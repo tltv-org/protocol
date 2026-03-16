@@ -1,0 +1,502 @@
+openapi: 3.1.0
+info:
+  title: TLTV Federation Protocol
+  description: |
+    HTTP API for TLTV nodes (PROTOCOL.md section 8).
+
+    All endpoints are read-only (GET). The management API (creating channels,
+    setting schedules, generating content) is implementation-specific and not
+    part of this protocol.
+  version: "1"
+  license:
+    name: See repository
+
+servers:
+  - url: https://{host}:{port}
+    description: Any TLTV node
+    variables:
+      host:
+        default: localhost
+      port:
+        default: "443"
+
+paths:
+  /.well-known/tltv:
+    get:
+      operationId: getNodeInfo
+      summary: Node info
+      description: |
+        Returns the node's identity and the channels it serves (section 8.1).
+        MUST NOT require authentication. Private channels MUST NOT appear.
+      tags: [discovery]
+      responses:
+        "200":
+          description: Node info.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: max-age=60
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NodeInfo"
+
+  /tltv/v1/channels/{channelId}:
+    get:
+      operationId: getChannelMetadata
+      summary: Channel metadata or migration document
+      description: |
+        Returns the signed channel metadata document (section 5) or a signed
+        migration document (section 5.14) if the channel has migrated.
+
+        A migration document has `"type": "migration"` and indicates the channel
+        has permanently moved to a new identity. Regular metadata has no `type`
+        field. Clients MUST check for the `type` field to distinguish the two.
+
+        The client MUST verify the signature before trusting the response.
+      tags: [channels]
+      parameters:
+        - $ref: "#/components/parameters/channelId"
+        - $ref: "#/components/parameters/token"
+      responses:
+        "200":
+          description: Signed channel metadata or migration document.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: max-age=60
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ChannelMetadata"
+                  - $ref: "#/components/schemas/MigrationDocument"
+                discriminator:
+                  propertyName: type
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "403":
+          $ref: "#/components/responses/AccessDenied"
+        "404":
+          $ref: "#/components/responses/ChannelNotFound"
+
+  /tltv/v1/channels/{channelId}/stream.m3u8:
+    get:
+      operationId: getChannelStream
+      summary: Channel stream
+      description: |
+        Returns the HLS manifest for the channel's live stream (section 8.3).
+        May return a 302 redirect to the actual manifest location.
+        For private channels, segment URIs in the manifest include the access token.
+      tags: [channels]
+      parameters:
+        - $ref: "#/components/parameters/channelId"
+        - $ref: "#/components/parameters/token"
+      responses:
+        "200":
+          description: HLS manifest.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: max-age=1, no-cache
+          content:
+            application/vnd.apple.mpegurl:
+              schema:
+                type: string
+        "302":
+          description: Redirect to HLS manifest at another path or external URL.
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+        "403":
+          $ref: "#/components/responses/AccessDenied"
+        "404":
+          $ref: "#/components/responses/ChannelNotFound"
+        "503":
+          $ref: "#/components/responses/StreamUnavailable"
+
+  /tltv/v1/channels/{channelId}/guide.json:
+    get:
+      operationId: getChannelGuide
+      summary: Channel guide (JSON)
+      description: |
+        Returns the signed channel guide document (section 6).
+        The client MUST verify the signature before trusting the response.
+      tags: [channels]
+      parameters:
+        - $ref: "#/components/parameters/channelId"
+        - $ref: "#/components/parameters/token"
+      responses:
+        "200":
+          description: Signed channel guide.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: max-age=300
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChannelGuide"
+        "403":
+          $ref: "#/components/responses/AccessDenied"
+        "404":
+          $ref: "#/components/responses/ChannelNotFound"
+
+  /tltv/v1/channels/{channelId}/guide.xml:
+    get:
+      operationId: getChannelGuideXml
+      summary: Channel guide (XMLTV)
+      description: |
+        Returns the channel guide in XMLTV format (section 8.5).
+        NOT signed. Convenience format for IPTV client compatibility.
+        Clients requiring authenticity MUST use the JSON guide.
+      tags: [channels]
+      parameters:
+        - $ref: "#/components/parameters/channelId"
+        - $ref: "#/components/parameters/token"
+      responses:
+        "200":
+          description: XMLTV guide document.
+          content:
+            application/xml:
+              schema:
+                type: string
+        "403":
+          $ref: "#/components/responses/AccessDenied"
+        "404":
+          $ref: "#/components/responses/ChannelNotFound"
+
+  /tltv/v1/peers:
+    get:
+      operationId: getPeers
+      summary: Peer exchange
+      description: |
+        Returns channels this node knows about, both local and discovered
+        from other peers (section 8.6). Gossip-based discovery mechanism.
+        Private channels MUST NOT appear.
+      tags: [discovery]
+      responses:
+        "200":
+          description: Peer list.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: max-age=300
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PeerExchange"
+
+components:
+  parameters:
+    channelId:
+      name: channelId
+      in: path
+      required: true
+      description: Base58-encoded channel ID (version prefix + Ed25519 public key).
+      schema:
+        type: string
+        pattern: "^TV[1-9A-HJ-NP-Za-km-z]{44}$"
+        example: TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3
+
+    token:
+      name: token
+      in: query
+      required: false
+      description: Access token for private channels (section 5.7). Ignored for public channels.
+      schema:
+        type: string
+        maxLength: 256
+        pattern: "^[A-Za-z0-9._~-]+$"
+
+  responses:
+    InvalidRequest:
+      description: Malformed channel ID, invalid base58, wrong version prefix, or invalid query parameters.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: invalid_request
+
+    AccessDenied:
+      description: Private channel, missing or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: access_denied
+
+    ChannelNotFound:
+      description: Node does not serve this channel.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: channel_not_found
+
+    StreamUnavailable:
+      description: Channel exists but stream is currently unavailable (e.g., on-demand channel with no viewers).
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: stream_unavailable
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          enum:
+            - invalid_request
+            - access_denied
+            - channel_not_found
+            - invalid_document
+            - stream_unavailable
+            - service_unavailable
+          description: Machine-readable error code.
+        message:
+          type: string
+          description: Optional human-readable explanation. Clients MUST NOT parse this.
+
+    ChannelMetadata:
+      type: object
+      required: [v, seq, id, name, stream, updated, signature]
+      properties:
+        v:
+          type: integer
+          const: 1
+        seq:
+          type: integer
+          minimum: 0
+        id:
+          type: string
+          pattern: "^TV[1-9A-HJ-NP-Za-km-z]{44}$"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        description:
+          type: string
+          maxLength: 256
+        icon:
+          type: string
+          pattern: "^/"
+        tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 32
+          maxItems: 5
+        language:
+          type: string
+          pattern: "^[a-z]{2}$"
+        timezone:
+          type: string
+          pattern: "^[A-Za-z_]+/[A-Za-z_]+(/[A-Za-z_]+)?$|^UTC$"
+          description: Channel's preferred timezone. IANA timezone name.
+        stream:
+          type: string
+          pattern: "^/"
+        guide:
+          type: string
+          pattern: "^/"
+        access:
+          type: string
+          enum: [public, token]
+          default: public
+        on_demand:
+          type: boolean
+        status:
+          type: string
+          enum: [active, retired]
+          default: active
+          description: Channel lifecycle status.
+        origins:
+          type: array
+          items:
+            type: string
+        updated:
+          type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+        signature:
+          type: string
+          pattern: "^[1-9A-HJ-NP-Za-km-z]{86,88}$"
+      additionalProperties: true
+
+    ChannelGuide:
+      type: object
+      required: [v, seq, id, from, until, entries, updated, signature]
+      properties:
+        v:
+          type: integer
+          const: 1
+        seq:
+          type: integer
+          minimum: 0
+        id:
+          type: string
+          pattern: "^TV[1-9A-HJ-NP-Za-km-z]{44}$"
+        from:
+          type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+          description: Start of guide window. ISO 8601 UTC.
+        until:
+          type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+          description: End of guide window. ISO 8601 UTC.
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/GuideEntry"
+        updated:
+          type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+        signature:
+          type: string
+          pattern: "^[1-9A-HJ-NP-Za-km-z]{86,88}$"
+      additionalProperties: true
+
+    GuideEntry:
+      type: object
+      required: [start, end, title]
+      properties:
+        start:
+          type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+          description: Program start time. ISO 8601 UTC.
+        end:
+          type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+          description: Program end time. ISO 8601 UTC.
+        title:
+          type: string
+          minLength: 1
+          maxLength: 128
+        description:
+          type: string
+          maxLength: 512
+        category:
+          type: string
+          maxLength: 32
+        relay_from:
+          type: string
+          pattern: "^TV[1-9A-HJ-NP-Za-km-z]{44}$"
+          description: Channel ID of the source being relayed.
+      additionalProperties: true
+
+    NodeInfo:
+      type: object
+      required: [protocol, versions, channels, relaying]
+      properties:
+        protocol:
+          type: string
+          const: tltv
+        versions:
+          type: array
+          items:
+            type: integer
+          contains:
+            const: 1
+        channels:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelListEntry"
+        relaying:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelListEntry"
+      additionalProperties: true
+
+    ChannelListEntry:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+          pattern: "^TV[1-9A-HJ-NP-Za-km-z]{44}$"
+        name:
+          type: string
+      additionalProperties: true
+
+    PeerExchange:
+      type: object
+      required: [peers]
+      properties:
+        peers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PeerEntry"
+          maxItems: 100
+      additionalProperties: true
+
+    PeerEntry:
+      type: object
+      required: [id, name, hints, last_seen]
+      properties:
+        id:
+          type: string
+          pattern: "^TV[1-9A-HJ-NP-Za-km-z]{44}$"
+        name:
+          type: string
+        hints:
+          type: array
+          items:
+            type: string
+        last_seen:
+          type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+      additionalProperties: true
+
+    MigrationDocument:
+      type: object
+      description: |
+        Signed migration document declaring a channel has moved to a new
+        identity (section 5.14). Served at the old channel's metadata endpoint
+        instead of regular metadata.
+      required: [type, from, to, migrated, signature]
+      properties:
+        type:
+          type: string
+          const: migration
+        from:
+          type: string
+          pattern: "^TV[1-9A-HJ-NP-Za-km-z]{44}$"
+          description: Channel ID of the old (migrating) channel.
+        to:
+          type: string
+          pattern: "^TV[1-9A-HJ-NP-Za-km-z]{44}$"
+          description: Channel ID of the new channel.
+        reason:
+          type: string
+          maxLength: 256
+          description: Human-readable reason for migration.
+        migrated:
+          type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+          description: Timestamp of migration. ISO 8601 UTC.
+        signature:
+          type: string
+          pattern: "^[1-9A-HJ-NP-Za-km-z]{86,88}$"
+          description: Base58-encoded Ed25519 signature of the old channel's key.
+      additionalProperties: true
+
+tags:
+  - name: discovery
+    description: Node discovery and peer exchange.
+  - name: channels
+    description: Channel metadata, streams, and guides.

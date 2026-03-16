@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tltv.tv/schemas/v1/node-info.json",
+  "title": "TLTV Node Info",
+  "description": "Response from /.well-known/tltv (PROTOCOL.md section 8.1). Not signed.",
+  "type": "object",
+  "required": ["protocol", "versions", "channels", "relaying"],
+  "properties": {
+    "protocol": {
+      "type": "string",
+      "const": "tltv",
+      "description": "Protocol identifier. MUST be 'tltv'."
+    },
+    "versions": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "contains": {
+        "const": 1
+      },
+      "description": "Protocol versions this node supports. MUST include 1."
+    },
+    "channels": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/channelListEntry"
+      },
+      "description": "Public channels this node originates."
+    },
+    "relaying": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/channelListEntry"
+      },
+      "description": "Public channels this node relays."
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "channelListEntry": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {
+          "$ref": "defs.json#/$defs/channelId"
+        },
+        "name": {
+          "type": "string",
+          "description": "Advisory channel name (not authoritative)."
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

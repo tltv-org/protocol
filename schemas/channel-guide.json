@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tltv.tv/schemas/v1/channel-guide.json",
+  "title": "TLTV Channel Guide",
+  "description": "Signed channel guide document (PROTOCOL.md section 6).",
+  "type": "object",
+  "required": ["v", "seq", "id", "from", "until", "entries", "updated", "signature"],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1,
+      "description": "Guide format version. MUST be 1."
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unix epoch timestamp in seconds (independent from metadata seq)."
+    },
+    "id": {
+      "$ref": "defs.json#/$defs/channelId"
+    },
+    "from": {
+      "$ref": "defs.json#/$defs/timestampUTC",
+      "description": "Start of the guide window. ISO 8601 UTC."
+    },
+    "until": {
+      "$ref": "defs.json#/$defs/timestampUTC",
+      "description": "End of the guide window. ISO 8601 UTC."
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/guideEntry"
+      },
+      "description": "Ordered list of guide entries. MAY be empty."
+    },
+    "updated": {
+      "$ref": "defs.json#/$defs/timestampUTC"
+    },
+    "signature": {
+      "$ref": "defs.json#/$defs/base58Signature"
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "guideEntry": {
+      "type": "object",
+      "required": ["start", "end", "title"],
+      "properties": {
+        "start": {
+          "$ref": "defs.json#/$defs/timestampUTC",
+          "description": "Program start time. ISO 8601 UTC."
+        },
+        "end": {
+          "$ref": "defs.json#/$defs/timestampUTC",
+          "description": "Program end time. ISO 8601 UTC."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Program title. 1-128 characters."
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 512,
+          "description": "Program description. Max 512 characters."
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 32,
+          "description": "Free-text category. Max 32 characters."
+        },
+        "relay_from": {
+          "$ref": "defs.json#/$defs/channelId",
+          "description": "Channel ID of the source being relayed during this entry."
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

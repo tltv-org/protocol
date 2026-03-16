@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tltv.tv/schemas/v1/channel-metadata.json",
+  "title": "TLTV Channel Metadata",
+  "description": "Signed channel metadata document (PROTOCOL.md section 5).",
+  "type": "object",
+  "required": ["v", "seq", "id", "name", "stream", "updated", "signature"],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1,
+      "description": "Metadata format version. MUST be 1."
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unix epoch timestamp in seconds. Monotonically increasing."
+    },
+    "id": {
+      "$ref": "defs.json#/$defs/channelId"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Human-readable channel name. 1-64 Unicode code points."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 256,
+      "description": "Channel description. Max 256 Unicode code points."
+    },
+    "icon": {
+      "type": "string",
+      "pattern": "^/",
+      "description": "Absolute path to channel icon/logo image."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 32
+      },
+      "maxItems": 5,
+      "description": "Channel categories/tags for discovery. Max 5, each 1-32 code points."
+    },
+    "language": {
+      "type": "string",
+      "pattern": "^[a-z]{2}$",
+      "description": "ISO 639-1 language code."
+    },
+    "timezone": {
+      "$ref": "defs.json#/$defs/ianaTimezone",
+      "description": "Channel's preferred timezone for display. IANA timezone name."
+    },
+    "stream": {
+      "type": "string",
+      "pattern": "^/",
+      "description": "Absolute path to HLS manifest."
+    },
+    "guide": {
+      "type": "string",
+      "pattern": "^/",
+      "description": "Absolute path to JSON guide endpoint."
+    },
+    "access": {
+      "type": "string",
+      "enum": ["public", "token"],
+      "default": "public",
+      "description": "Access mode. 'public' (default) or 'token'."
+    },
+    "on_demand": {
+      "type": "boolean",
+      "description": "If true, stream starts on first viewer request."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "retired"],
+      "default": "active",
+      "description": "Channel lifecycle status. 'active' (default) or 'retired'."
+    },
+    "origins": {
+      "type": "array",
+      "items": {
+        "$ref": "defs.json#/$defs/hostPort"
+      },
+      "description": "Origin node host:port addresses."
+    },
+    "updated": {
+      "$ref": "defs.json#/$defs/timestampUTC"
+    },
+    "signature": {
+      "$ref": "defs.json#/$defs/base58Signature"
+    }
+  },
+  "additionalProperties": true
+}

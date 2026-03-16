@@ -1,0 +1,54 @@
+{
+  "description": "Signed guide document (PROTOCOL.md section 6)",
+  "note": "Uses same Ed25519 test keypair as c1-identity.json (RFC 8032 section 7.1, test vector 1). All timestamps are UTC.",
+  "private_key_seed_hex": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+  "channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+  "document": {
+    "v": 1,
+    "seq": 1742000042,
+    "id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+    "from": "2026-03-14T05:00:00Z",
+    "until": "2026-03-16T05:00:00Z",
+    "entries": [
+      {
+        "start": "2026-03-15T00:00:00Z",
+        "end": "2026-03-15T00:15:00Z",
+        "title": "Channel One Intro"
+      },
+      {
+        "start": "2026-03-15T00:15:00Z",
+        "end": "2026-03-15T01:00:00Z",
+        "title": "Evening Clips",
+        "description": "Curated selection of short films",
+        "category": "film"
+      }
+    ],
+    "updated": "2026-03-14T03:00:00Z"
+  },
+  "canonical_json_length": 427,
+  "signature_hex": "f08948eea821590784897a8b21ec382653cf82158ccd9f8f95a88b2942215d2a5ceecff8af968e8d6c6ae1ac75050752183ba57bc578041fc945aacaf4eda30c",
+  "signature_base58": "5ovnFoizF7E7ZKD9jfH6uyus1SgRbRLKnNGNNEvN26h5HQaqwEz14875HSoJaXe74besWDUMA2W29cgv6YHrSRBq",
+  "signed_document": {
+    "v": 1,
+    "seq": 1742000042,
+    "id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+    "from": "2026-03-14T05:00:00Z",
+    "until": "2026-03-16T05:00:00Z",
+    "entries": [
+      {
+        "start": "2026-03-15T00:00:00Z",
+        "end": "2026-03-15T00:15:00Z",
+        "title": "Channel One Intro"
+      },
+      {
+        "start": "2026-03-15T00:15:00Z",
+        "end": "2026-03-15T01:00:00Z",
+        "title": "Evening Clips",
+        "description": "Curated selection of short films",
+        "category": "film"
+      }
+    ],
+    "updated": "2026-03-14T03:00:00Z",
+    "signature": "5ovnFoizF7E7ZKD9jfH6uyus1SgRbRLKnNGNNEvN26h5HQaqwEz14875HSoJaXe74besWDUMA2W29cgv6YHrSRBq"
+  }
+}

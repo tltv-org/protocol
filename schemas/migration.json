@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tltv.tv/schemas/v1/migration.json",
+  "title": "TLTV Key Migration Document",
+  "description": "Signed migration document declaring a channel has moved to a new identity (PROTOCOL.md section 5.14).",
+  "type": "object",
+  "required": ["type", "from", "to", "migrated", "signature"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "migration",
+      "description": "Document type. MUST be 'migration'."
+    },
+    "from": {
+      "$ref": "defs.json#/$defs/channelId",
+      "description": "Channel ID of the old (migrating) channel. The signature is verified against this key."
+    },
+    "to": {
+      "$ref": "defs.json#/$defs/channelId",
+      "description": "Channel ID of the new channel."
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 256,
+      "description": "Human-readable reason for migration. Max 256 Unicode code points."
+    },
+    "migrated": {
+      "$ref": "defs.json#/$defs/timestampUTC",
+      "description": "Timestamp of migration. ISO 8601 UTC."
+    },
+    "signature": {
+      "$ref": "defs.json#/$defs/base58Signature",
+      "description": "Base58-encoded Ed25519 signature of the old channel's private key."
+    }
+  },
+  "additionalProperties": true
+}

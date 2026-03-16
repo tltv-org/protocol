@@ -1,0 +1,40 @@
+{
+  "description": "Key migration document (PROTOCOL.md section 5.14)",
+  "note": "Old key is RFC 8032 section 7.1 test vector 1. New key seed is 4ccd089b28ff96da9db6c346ec114e0f5b8a319f35aba624da8cf6ed4fb8a6fb.",
+  "old_channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+  "old_private_key_seed_hex": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+  "new_channel_id": "TVBNw4nHBzAaBWr8b17Sd2sGYcvMc1utersd6tceC6WmBZ",
+  "new_public_key_hex": "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c",
+  "document": {
+    "v": 1,
+    "seq": 1742000000,
+    "type": "migration",
+    "from": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+    "to": "TVBNw4nHBzAaBWr8b17Sd2sGYcvMc1utersd6tceC6WmBZ",
+    "reason": "key compromise",
+    "migrated": "2026-03-14T12:00:00Z"
+  },
+  "canonical_json_length": 213,
+  "signature_hex": "7a326de844670e0798631b9fb75d02760a04d3d72caeccb94f9e2beef5d91616ccd4dfe6c7efb1b28a9bfb5e2b9bcf0ccce42b2db4f0b8a49c238d8381e1a507",
+  "signature_base58": "3Shcvdqrgb6Voi3mfPhKc77vbksDxcLGAbxKfDugQ3onq4DdagYeFPhb98DhLwCwrSrW7wtrxZF4GE8BxjHUinWA",
+  "signed_document": {
+    "v": 1,
+    "seq": 1742000000,
+    "type": "migration",
+    "from": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+    "to": "TVBNw4nHBzAaBWr8b17Sd2sGYcvMc1utersd6tceC6WmBZ",
+    "reason": "key compromise",
+    "migrated": "2026-03-14T12:00:00Z",
+    "signature": "3Shcvdqrgb6Voi3mfPhKc77vbksDxcLGAbxKfDugQ3onq4DdagYeFPhb98DhLwCwrSrW7wtrxZF4GE8BxjHUinWA"
+  },
+  "verification_steps": [
+    "Check 'type' is 'migration'",
+    "Check 'v' is a supported version (1)",
+    "Remove the 'signature' field from the document",
+    "Canonicalize to JSON (keys sorted, no whitespace)",
+    "Decode channel ID from 'from' field to extract 32-byte Ed25519 public key",
+    "Decode signature from base58 to 64 bytes",
+    "Verify Ed25519 signature against canonical JSON bytes using the public key",
+    "Apply seq replay protection (reject if seq is lower than previously seen)"
+  ]
+}

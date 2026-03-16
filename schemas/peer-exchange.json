@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tltv.tv/schemas/v1/peer-exchange.json",
+  "title": "TLTV Peer Exchange",
+  "description": "Response from /tltv/v1/peers (PROTOCOL.md section 8.6). Not signed.",
+  "type": "object",
+  "required": ["peers"],
+  "properties": {
+    "peers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/peerEntry"
+      },
+      "maxItems": 100,
+      "description": "Known public channels. Max 100 entries."
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "peerEntry": {
+      "type": "object",
+      "required": ["id", "name", "hints", "last_seen"],
+      "properties": {
+        "id": {
+          "$ref": "defs.json#/$defs/channelId"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name from last verified metadata."
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "$ref": "defs.json#/$defs/hostPort"
+          },
+          "description": "Known host:port locations for this channel."
+        },
+        "last_seen": {
+          "$ref": "defs.json#/$defs/timestampUTC",
+          "description": "Last successful contact. ISO 8601 UTC."
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

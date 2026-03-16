@@ -1,0 +1,18 @@
+{
+  "description": "Metadata signing (PROTOCOL.md Appendix C.2)",
+  "private_key_seed_hex": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+  "document": {
+    "v": 1,
+    "seq": 1742000000,
+    "id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+    "name": "Test Channel",
+    "description": "A test channel for protocol verification",
+    "stream": "/tltv/v1/channels/TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3/stream.m3u8",
+    "guide": "/tltv/v1/channels/TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3/guide.json",
+    "access": "public",
+    "updated": "2026-03-14T12:00:00Z"
+  },
+  "canonical_json_length": 382,
+  "signature_hex": "49064ea6d6a8dce519874e51c1c4d58fdf18bc4b267dd995cfea03200fdf3f94a1fcb6fb0f76998f7af941b689da95cbf5738caaa162ba6f32a844000512ac0a",
+  "signature_base58": "2TgRpS4h1UREKn3rRGk3cMRQ9fXQZ2TYX76oWCkHnDbHmUm2hTNAcXy8nSphcFVwareooGM2hqwvWgoGigaCNaob"
+}

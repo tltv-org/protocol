@@ -1,0 +1,95 @@
+{
+  "description": "URI parsing and formatting (PROTOCOL.md section 3)",
+  "channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+  "cases": [
+    {
+      "name": "bare channel ID",
+      "uri": "tltv://TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+      "expected": {
+        "channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+        "hints": [],
+        "token": null
+      }
+    },
+    {
+      "name": "@ hint with host and port",
+      "uri": "tltv://TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3@node.example.com:8443",
+      "expected": {
+        "channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+        "hints": ["node.example.com:8443"],
+        "token": null
+      }
+    },
+    {
+      "name": "@ hint with IP address",
+      "uri": "tltv://TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3@192.168.1.100:8000",
+      "expected": {
+        "channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+        "hints": ["192.168.1.100:8000"],
+        "token": null
+      }
+    },
+    {
+      "name": "single via hint",
+      "uri": "tltv://TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3?via=relay.example.com:8443",
+      "expected": {
+        "channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+        "hints": ["relay.example.com:8443"],
+        "token": null
+      }
+    },
+    {
+      "name": "multiple via hints (comma-separated)",
+      "uri": "tltv://TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3?via=relay1.example.com:8000,relay2.example.com:8443",
+      "expected": {
+        "channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+        "hints": ["relay1.example.com:8000", "relay2.example.com:8443"],
+        "token": null
+      }
+    },
+    {
+      "name": "token only (private channel)",
+      "uri": "tltv://TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3?token=secret_abc123",
+      "expected": {
+        "channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+        "hints": [],
+        "token": "secret_abc123"
+      }
+    },
+    {
+      "name": "token and via hint",
+      "uri": "tltv://TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3?token=secret_abc123&via=relay.example.com:443",
+      "expected": {
+        "channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+        "hints": ["relay.example.com:443"],
+        "token": "secret_abc123"
+      }
+    },
+    {
+      "name": "@ hint combined with via hint",
+      "uri": "tltv://TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3@origin.example.com:443?via=relay.example.com:8000",
+      "expected": {
+        "channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+        "hints": ["origin.example.com:443", "relay.example.com:8000"],
+        "token": null
+      }
+    }
+  ],
+  "invalid_cases": [
+    {
+      "name": "wrong scheme",
+      "uri": "https://example.com",
+      "error": "Expected tltv:// scheme"
+    },
+    {
+      "name": "empty channel ID",
+      "uri": "tltv://",
+      "error": "Missing channel ID"
+    },
+    {
+      "name": "http scheme",
+      "uri": "http://TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+      "error": "Expected tltv:// scheme"
+    }
+  ]
+}

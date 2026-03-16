@@ -1,0 +1,109 @@
+{
+  "description": "Invalid inputs that implementations MUST reject (PROTOCOL.md sections 2, 5, 7)",
+  "valid_channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+  "identity": {
+    "description": "Invalid channel IDs that parse_channel_id MUST reject",
+    "cases": [
+      {
+        "name": "wrong version prefix (0x0000 instead of 0x1433)",
+        "channel_id": "11FVen3X669xLzsi6N2V91DoiyzHzg1uAgqiT8jZ9nS96Z",
+        "error": "wrong_version_prefix"
+      },
+      {
+        "name": "too short (18 bytes payload, not 34)",
+        "channel_id": "HKfHb5mVXWZoTX8o77GnDgnLMoV",
+        "error": "wrong_length"
+      },
+      {
+        "name": "invalid base58 character (0 is not in base58 alphabet)",
+        "channel_id": "TV0InvalidBase58WithZeroChar",
+        "error": "invalid_base58"
+      },
+      {
+        "name": "invalid base58 character (O is not in base58 alphabet)",
+        "channel_id": "TVOanotherInvalidBase58String",
+        "error": "invalid_base58"
+      },
+      {
+        "name": "invalid base58 character (l is not in base58 alphabet)",
+        "channel_id": "TVlowercaseLinvalidBase58Str",
+        "error": "invalid_base58"
+      },
+      {
+        "name": "invalid base58 character (I is not in base58 alphabet)",
+        "channel_id": "TVIuppercaseIinvalidBase58St",
+        "error": "invalid_base58"
+      },
+      {
+        "name": "empty string",
+        "channel_id": "",
+        "error": "invalid_base58"
+      }
+    ]
+  },
+  "verification": {
+    "description": "Signed documents that verify_document MUST reject",
+    "cases": [
+      {
+        "name": "tampered name field (signature no longer valid)",
+        "document": {
+          "v": 1,
+          "seq": 1742000000,
+          "id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+          "name": "TAMPERED NAME",
+          "description": "A test channel for protocol verification",
+          "stream": "/tltv/v1/channels/TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3/stream.m3u8",
+          "guide": "/tltv/v1/channels/TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3/guide.json",
+          "access": "public",
+          "updated": "2026-03-14T12:00:00Z",
+          "signature": "2TgRpS4h1UREKn3rRGk3cMRQ9fXQZ2TYX76oWCkHnDbHmUm2hTNAcXy8nSphcFVwareooGM2hqwvWgoGigaCNaob"
+        },
+        "error": "invalid_signature"
+      },
+      {
+        "name": "missing signature field",
+        "document": {
+          "v": 1,
+          "seq": 1742000000,
+          "id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+          "name": "Test Channel",
+          "description": "A test channel for protocol verification",
+          "stream": "/tltv/v1/channels/TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3/stream.m3u8",
+          "guide": "/tltv/v1/channels/TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3/guide.json",
+          "access": "public",
+          "updated": "2026-03-14T12:00:00Z"
+        },
+        "error": "missing_signature"
+      },
+      {
+        "name": "identity binding failure (id field does not match expected channel)",
+        "document": {
+          "v": 1,
+          "seq": 1742000000,
+          "id": "TVsomeOtherChannelIdThatDoesNotMatchExpected1234",
+          "name": "Test Channel",
+          "stream": "/tltv/v1/channels/TVsomeOtherChannelIdThatDoesNotMatchExpected1234/stream.m3u8",
+          "access": "public",
+          "updated": "2026-03-14T12:00:00Z",
+          "signature": "4ga7qsWoJmM4dp8t8YbQoaCHFXAYpRCxfMmkz1s2UaC55quqV9pioXfnGRkxGhzcLZVRgYFr5bKV6F8oJV9U2esc"
+        },
+        "verify_against_channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+        "error": "identity_binding_mismatch"
+      },
+      {
+        "name": "truncated signature (not 64 bytes)",
+        "document": {
+          "v": 1,
+          "seq": 1742000000,
+          "id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+          "name": "Test Channel",
+          "stream": "/tltv/v1/channels/TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3/stream.m3u8",
+          "access": "public",
+          "updated": "2026-03-14T12:00:00Z",
+          "signature": "2TgRpS4h1URE"
+        },
+        "error": "invalid_signature_length"
+      }
+    ]
+  }
+}

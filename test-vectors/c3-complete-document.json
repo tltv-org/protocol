@@ -1,0 +1,23 @@
+{
+  "description": "Complete signed metadata document (PROTOCOL.md Appendix C.3)",
+  "channel_id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+  "signed_document": {
+    "v": 1,
+    "seq": 1742000000,
+    "id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
+    "name": "Test Channel",
+    "description": "A test channel for protocol verification",
+    "stream": "/tltv/v1/channels/TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3/stream.m3u8",
+    "guide": "/tltv/v1/channels/TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3/guide.json",
+    "access": "public",
+    "updated": "2026-03-14T12:00:00Z",
+    "signature": "2TgRpS4h1UREKn3rRGk3cMRQ9fXQZ2TYX76oWCkHnDbHmUm2hTNAcXy8nSphcFVwareooGM2hqwvWgoGigaCNaob"
+  },
+  "verification_steps": [
+    "Remove the 'signature' field from the document",
+    "Canonicalize to JSON (keys sorted, no whitespace)",
+    "Decode channel ID from 'id' field to extract 32-byte Ed25519 public key",
+    "Decode signature from base58 to 64 bytes",
+    "Verify Ed25519 signature against canonical JSON bytes using the public key"
+  ]
+}
