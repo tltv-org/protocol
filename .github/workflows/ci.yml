@@ -1,0 +1,166 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-vectors:
+    name: Test Vectors (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    container:
+      image: python:${{ matrix.python-version }}-bookworm
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Install Node.js for JS-based actions
+        run: apt-get update -qq && apt-get install -y -qq nodejs > /dev/null
+
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest
+        working-directory: reference/python
+
+      - name: Run test vectors
+        run: pytest tests/test_vectors.py -v --tb=short
+        working-directory: reference/python
+        env:
+          PYTHONPATH: .
+
+  validate-schemas:
+    name: Validate Schemas
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.12-bookworm
+
+    steps:
+      - name: Install Node.js for JS-based actions
+        run: apt-get update -qq && apt-get install -y -qq nodejs > /dev/null
+
+      - uses: actions/checkout@v4
+
+      - name: Install validators
+        run: pip install jsonschema referencing
+
+      - name: Validate schema files are well-formed
+        run: |
+          python3 -c "
+          import json, sys
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+
+          ok = True
+          for schema_file in sorted(Path('schemas').glob('*.json')):
+              print(f'Checking {schema_file} ...', end=' ')
+              try:
+                  s = json.loads(schema_file.read_text())
+                  Draft202012Validator.check_schema(s)
+                  print('OK')
+              except Exception as e:
+                  print(f'FAIL: {e}')
+                  ok = False
+          if not ok:
+              sys.exit(1)
+          "
+
+      - name: Validate test vectors against schemas
+        run: |
+          python3 -c "
+          import json, sys
+          from pathlib import Path
+          from referencing import Registry, Resource
+          from jsonschema import Draft202012Validator
+
+          # Build a registry with all local schemas keyed by their \$id
+          schemas_dir = Path('schemas')
+          registry = Registry()
+          for schema_file in schemas_dir.glob('*.json'):
+              schema = json.loads(schema_file.read_text())
+              if '\$id' in schema:
+                  resource = Resource.from_contents(schema)
+                  registry = registry.with_resource(schema['\$id'], resource)
+
+          # Test cases: (vector_file, key_in_vector, schema_file, label)
+          cases = [
+              ('c3-complete-document.json', 'signed_document', 'channel-metadata.json', 'c3 metadata'),
+              ('c5-guide-document.json', 'signed_document', 'channel-guide.json', 'c5 guide'),
+              ('c7-key-migration.json', 'signed_document', 'migration.json', 'c7 migration'),
+          ]
+
+          ok = True
+          for vector_file, key, schema_file, label in cases:
+              print(f'Validating {label} ...', end=' ')
+              try:
+                  vector = json.loads((Path('test-vectors') / vector_file).read_text())
+                  schema = json.loads((schemas_dir / schema_file).read_text())
+                  validator = Draft202012Validator(schema, registry=registry)
+                  validator.validate(vector[key])
+                  print('OK')
+              except Exception as e:
+                  print(f'FAIL: {e}')
+                  ok = False
+          if not ok:
+              sys.exit(1)
+          "
+
+  validate-openapi:
+    name: Validate OpenAPI Spec
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.12-bookworm
+
+    steps:
+      - name: Install Node.js for JS-based actions
+        run: apt-get update -qq && apt-get install -y -qq nodejs > /dev/null
+
+      - uses: actions/checkout@v4
+
+      - name: Install OpenAPI validator
+        run: pip install openapi-spec-validator
+
+      - name: Validate openapi.yaml
+        run: python -m openapi_spec_validator schemas/openapi.yaml
+
+  lint:
+    name: Lint JSON & YAML
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.12-bookworm
+
+    steps:
+      - name: Install Node.js for JS-based actions
+        run: apt-get update -qq && apt-get install -y -qq nodejs > /dev/null
+
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: pip install yamllint
+
+      - name: Validate all JSON files
+        run: |
+          python3 -c "
+          import json, sys
+          from pathlib import Path
+
+          ok = True
+          for p in sorted(Path('.').glob('**/*.json')):
+              if '.git' in p.parts or '.venv' in p.parts:
+                  continue
+              try:
+                  json.loads(p.read_text())
+                  print(f'OK: {p}')
+              except Exception as e:
+                  print(f'FAIL: {p} - {e}', file=sys.stderr)
+                  ok = False
+          if not ok:
+              sys.exit(1)
+          "
+
+      - name: Lint YAML files
+        run: yamllint -d relaxed schemas/openapi.yaml
