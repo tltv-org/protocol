@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ if not .IsHome }}{{ .Title }} | {{ end }}{{ .Site.Title }}</title>
+  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav>
+      <a href="/" class="site-title">{{ .Site.Title }}</a>
+      <span class="version">v{{ .Site.Params.version }}</span>
+      <div class="nav-links">
+        <a href="/schemas/">Schemas &amp; API</a>
+        <a href="{{ .Site.Params.repoURL }}">Source</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    {{ block "main" . }}{{ end }}
+  </main>
+
+  <footer>
+    <p>TLTV Federation Protocol &mdash; <a href="{{ .Site.Params.repoURL }}">Source Repository</a></p>
+  </footer>
+</body>
+</html>

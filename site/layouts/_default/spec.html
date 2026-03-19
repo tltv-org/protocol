@@ -1,0 +1,46 @@
+{{ define "main" }}
+{{ $spec := resources.Get "repo/PROTOCOL.md" }}
+{{ if $spec }}
+  {{ $raw := $spec.Content }}
+  {{/* Strip the H1 title and front matter block */}}
+  {{ $body := replaceRE `(?s)\A# [^\n]+\n+\*\*Version.*?---\n*` "" $raw }}
+
+  <div class="spec-layout">
+    <nav class="spec-toc" id="spec-toc">
+      <h2>Contents</h2>
+      <ul>
+        {{/* Extract ## headings for TOC — use anchorize to match Hugo's heading IDs */}}
+        {{ range split $body "\n" }}
+          {{ if hasPrefix . "## " }}
+            {{ $title := strings.TrimPrefix "## " . }}
+            {{ $id := $title | anchorize }}
+            <li><a href="#{{ $id }}">{{ $title }}</a></li>
+          {{ end }}
+        {{ end }}
+      </ul>
+      <div class="toc-footer">
+        <a href="/schemas/">Schemas &amp; API</a>
+      </div>
+    </nav>
+
+    <article class="spec">
+      <header class="spec-header">
+        <h1>{{ .Title }}</h1>
+        <div class="spec-meta">
+          <span>Version {{ .Site.Params.version }}</span>
+          <a href="{{ .Site.Params.repoURL }}">Source</a>
+        </div>
+      </header>
+
+      <div class="spec-body">
+        {{ $body | markdownify }}
+      </div>
+    </article>
+  </div>
+{{ else }}
+  <article>
+    <h1>{{ .Title }}</h1>
+    <p>Error: PROTOCOL.md not found.</p>
+  </article>
+{{ end }}
+{{ end }}

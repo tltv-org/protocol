@@ -75,6 +75,10 @@ pip install -r requirements.txt pytest
 PYTHONPATH=. pytest tests/test_vectors.py -v
 ```
 
+## Website
+
+The rendered specification is published at [specs.timelooptv.org](https://specs.timelooptv.org). The site source lives in `site/` and is built with [Hugo](https://gohugo.io/).
+
 ## Repository Structure
 
 ```
@@ -83,6 +87,7 @@ schemas/
   openapi.yaml                      # OpenAPI 3.1 endpoint definitions
   channel-metadata.json             # JSON Schema: signed metadata
   channel-guide.json                # JSON Schema: signed guide
+  migration.json                    # JSON Schema: signed migration
   node-info.json                    # JSON Schema: /.well-known/tltv
   peer-exchange.json                # JSON Schema: /tltv/v1/peers
   defs.json                         # Shared type definitions
@@ -93,6 +98,7 @@ test-vectors/
   c4-uri-parsing.json               # URI parsing vectors (valid + invalid)
   c5-guide-document.json            # Signed guide document vectors
   c6-invalid-inputs.json            # Invalid input rejection vectors
+  c7-key-migration.json             # Key migration document vectors
 reference/
   python/
     tltv/
@@ -102,6 +108,11 @@ reference/
     tests/
       test_vectors.py               # Tests against spec vectors
     requirements.txt                # cryptography>=41.0
+site/
+  hugo.toml                         # Hugo config (specs.timelooptv.org)
+  content/                          # Site content pages
+  layouts/                          # Hugo templates
+  static/                           # CSS and static assets
 ```
 
 ## License

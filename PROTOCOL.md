@@ -8,7 +8,7 @@
 
 ## 1. Introduction
 
-TLTV is a federation protocol for 24/7 television channels. Each channel is an always-on server identified by an Ed25519 public key. Channels serve video over HLS and metadata over HTTPS. Any node can relay a public channel's stream without permission. There is no central discovery server, no DNS dependency, and no required registry.
+TLTV (Time Loop TV) is a federation protocol for 24/7 television channels. Each channel is an always-on server identified by an Ed25519 public key. Channels serve video over HLS and metadata over HTTPS. Any node can relay a public channel's stream without permission. There is no central discovery server, no DNS dependency, and no required registry.
 
 This document specifies protocol version 1: public and private channels, direct connections, open relay for public channels, peer exchange.
 

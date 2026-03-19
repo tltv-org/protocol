@@ -1,0 +1,34 @@
+baseURL = 'https://specs.timelooptv.org/'
+languageCode = 'en-us'
+title = 'TLTV Protocol Specification'
+
+[params]
+  description = 'Federation protocol for 24/7 television channels'
+  version = '1.0'
+  repoURL = 'https://github.com/tltv-org/protocol'
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    style = 'monokai'
+    lineNos = false
+    noClasses = false
+
+[module]
+  [[module.mounts]]
+    source = 'content'
+    target = 'content'
+  [[module.mounts]]
+    source = '../schemas'
+    target = 'static/schemas'
+  [[module.mounts]]
+    source = '../test-vectors'
+    target = 'static/test-vectors'
+  [[module.mounts]]
+    source = 'static'
+    target = 'static'
+  [[module.mounts]]
+    source = '..'
+    target = 'assets/repo'
