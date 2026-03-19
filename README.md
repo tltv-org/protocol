@@ -77,7 +77,7 @@ PYTHONPATH=. pytest tests/test_vectors.py -v
 
 ## Website
 
-The rendered specification is published at [specs.timelooptv.org](https://specs.timelooptv.org). The site source lives in `site/` and is built with [Hugo](https://gohugo.io/).
+The rendered specification is published at [spec.timelooptv.org](https://spec.timelooptv.org). The site source lives in `site/` and is built with [Hugo](https://gohugo.io/).
 
 ## Repository Structure
 
@@ -109,7 +109,7 @@ reference/
       test_vectors.py               # Tests against spec vectors
     requirements.txt                # cryptography>=41.0
 site/
-  hugo.toml                         # Hugo config (specs.timelooptv.org)
+  hugo.toml                         # Hugo config (spec.timelooptv.org)
   content/                          # Site content pages
   layouts/                          # Hugo templates
   static/                           # CSS and static assets

@@ -1,4 +1,4 @@
-baseURL = 'https://specs.timelooptv.org/'
+baseURL = 'https://spec.timelooptv.org/'
 languageCode = 'en-us'
 title = 'TLTV Protocol Specification'
 
