@@ -242,11 +242,26 @@ li {
   border-right: 1px solid var(--border);
 }
 
-.spec-toc h2 {
+.toc-collapse {
+  border: none;
+}
+
+.toc-collapse summary {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--fg-muted);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.toc-collapse summary::-webkit-details-marker {
+  display: none;
+}
+
+.toc-collapse[open] summary {
   margin-bottom: 0.75rem;
 }
 
@@ -371,6 +386,19 @@ blockquote {
     border-bottom: 1px solid var(--border);
     padding: 0 0 1rem;
     margin-bottom: 2rem;
+  }
+
+  .toc-collapse summary {
+    cursor: pointer;
+    list-style: revert;
+  }
+
+  .toc-collapse summary::-webkit-details-marker {
+    display: revert;
+  }
+
+  .toc-collapse:not([open]) + .toc-footer {
+    display: none;
   }
 
   main {

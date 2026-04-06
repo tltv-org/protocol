@@ -13,6 +13,8 @@
       <a href="/" class="site-title">{{ .Site.Title }}</a>
       <span class="version">v{{ .Site.Params.version }}</span>
       <div class="nav-links">
+        <a href="https://timelooptv.org">Project</a>
+        <a href="https://demo.timelooptv.org">Demo</a>
         <a href="/schemas/">Schemas &amp; API</a>
         <a href="{{ .Site.Params.repoURL }}">Source</a>
       </div>
@@ -23,8 +25,9 @@
     {{ block "main" . }}{{ end }}
   </main>
 
+  <script>if(innerWidth<=900)document.querySelector('.toc-collapse').removeAttribute('open')</script>
   <footer>
-    <p>TLTV Federation Protocol &mdash; <a href="{{ .Site.Params.repoURL }}">Source Repository</a></p>
+    <p><a href="https://timelooptv.org">timelooptv.org</a> &middot; <a href="https://demo.timelooptv.org">Demo</a> &middot; <a href="{{ .Site.Params.repoURL }}">Source</a></p>
   </footer>
 </body>
 </html>

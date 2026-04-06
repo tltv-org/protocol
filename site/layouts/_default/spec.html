@@ -7,17 +7,19 @@
 
   <div class="spec-layout">
     <nav class="spec-toc" id="spec-toc">
-      <h2>Contents</h2>
-      <ul>
-        {{/* Extract ## headings for TOC — use anchorize to match Hugo's heading IDs */}}
-        {{ range split $body "\n" }}
-          {{ if hasPrefix . "## " }}
-            {{ $title := strings.TrimPrefix "## " . }}
-            {{ $id := $title | anchorize }}
-            <li><a href="#{{ $id }}">{{ $title }}</a></li>
+      <details class="toc-collapse" open>
+        <summary>Contents</summary>
+        <ul>
+          {{/* Extract ## headings for TOC — use anchorize to match Hugo's heading IDs */}}
+          {{ range split $body "\n" }}
+            {{ if hasPrefix . "## " }}
+              {{ $title := strings.TrimPrefix "## " . }}
+              {{ $id := $title | anchorize }}
+              <li><a href="#{{ $id }}">{{ $title }}</a></li>
+            {{ end }}
           {{ end }}
-        {{ end }}
-      </ul>
+        </ul>
+      </details>
       <div class="toc-footer">
         <a href="/schemas/">Schemas &amp; API</a>
       </div>

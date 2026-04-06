@@ -115,6 +115,13 @@ site/
   static/                           # CSS and static assets
 ```
 
+## Links
+
+- [timelooptv.org](https://timelooptv.org) — Project homepage
+- [Spec](https://spec.timelooptv.org) — Protocol specification
+- [Demo](https://demo.timelooptv.org) — Live demo
+- [GitHub](https://github.com/tltv-org) — All repositories
+
 ## License
 
 MIT -- see [LICENSE](LICENSE).
