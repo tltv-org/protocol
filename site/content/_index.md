@@ -1,4 +1,4 @@
 ---
-title: "TLTV Federation Protocol"
+title: "The tltv Protocol"
 layout: "spec"
 ---

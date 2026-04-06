@@ -1,4 +1,4 @@
-# TLTV Federation Protocol
+# The tltv Protocol
 
 **Version:** 1.0
 **Date:** March 16, 2026
@@ -8,19 +8,19 @@
 
 ## 1. Introduction
 
-TLTV (Time Loop TV) is a federation protocol for 24/7 television channels. Each channel is an always-on server identified by an Ed25519 public key. Channels serve video over HLS and metadata over HTTPS. Any node can relay a public channel's stream without permission. There is no central discovery server, no DNS dependency, and no required registry.
+tltv (Time Loop TV) is a federation protocol for 24/7 television channels. Each channel is an always-on server identified by an Ed25519 public key. Channels serve video over HLS and metadata over HTTPS. Any node can relay a public channel's stream without permission. There is no central discovery server, no DNS dependency, and no required registry.
 
 This document specifies protocol version 1: public and private channels, direct connections, open relay for public channels, peer exchange.
 
 ### 1.1 Scope
 
-This specification defines the wire protocol between TLTV nodes, viewers, and relays. It does not define:
+This specification defines the wire protocol between tltv nodes, viewers, and relays. It does not define:
 
 - How a channel generates or schedules content (management API).
 - How an operator configures their server (implementation detail).
 - How content is produced (showrunner, manual, or otherwise).
 
-The current TLTV codebase is one possible implementation. Any software that implements the endpoints and behaviors defined here can participate in the network.
+The current tltv codebase is one possible implementation. Any software that implements the endpoints and behaviors defined here can participate in the network.
 
 ### 1.2 Principles
 
@@ -28,7 +28,7 @@ The current TLTV codebase is one possible implementation. Any software that impl
 2. **Identity is cryptographic.** Public key = channel identity. No DNS, no registrar.
 3. **Single-writer authority.** Only the channel's private key can sign its metadata. No multi-party consensus needed.
 4. **Relays are HTTP caches.** Any node can mirror a public channel. Signed metadata means relays don't need to be trusted.
-5. **Protocol, not application.** The spec defines endpoints and data formats. Everything else is implementation choice. TLTV provides a reference implementation, but nobody has to use it.
+5. **Protocol, not application.** The spec defines endpoints and data formats. Everything else is implementation choice. tltv provides a reference implementation, but nobody has to use it.
 
 ### 1.3 Actors
 
@@ -204,7 +204,7 @@ Canonical JSON serialization MUST conform to RFC 8785 (JSON Canonicalization Sch
 
 Implementations MUST use a JCS-conforming library or follow RFC 8785 exactly. Any conforming JCS implementation will produce correct output for this protocol.
 
-**Additional constraints on signed TLTV documents:** signed documents MUST NOT contain floating-point numbers (all numeric values MUST be integers) and MUST NOT contain `null` values. These constraints simplify implementation — a canonicalizer that handles only strings, integers, booleans, arrays, and objects is sufficient for all TLTV documents.
+**Additional constraints on signed tltv documents:** signed documents MUST NOT contain floating-point numbers (all numeric values MUST be integers) and MUST NOT contain `null` values. These constraints simplify implementation — a canonicalizer that handles only strings, integers, booleans, arrays, and objects is sufficient for all tltv documents.
 
 ### 4.2 Example
 
@@ -237,7 +237,7 @@ Every channel publishes a signed metadata document. This is the source of truth 
   "v": 1,
   "seq": 1742000000,
   "id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
-  "name": "TLTV Channel One",
+  "name": "tltv Channel One",
   "description": "24/7 experimental television",
   "icon": "/tltv/v1/channels/TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3/icon.png",
   "tags": ["experimental", "generative", "archive"],
@@ -338,7 +338,7 @@ A channel with `"access": "token"` is a private channel. Access requires a beare
 - Sharing the URI = sharing access. Anyone with the URI can watch.
 - The operator manages tokens through the management API (not part of this protocol).
 - Rotating the token invalidates all existing URIs.
-- Conforming relays MUST NOT relay private channels. The relay model (section 10) applies only to public channels. Note: the protocol cannot prevent a token holder from restreaming content; this is a conformance rule for TLTV nodes, not a hard security property.
+- Conforming relays MUST NOT relay private channels. The relay model (section 10) applies only to public channels. Note: the protocol cannot prevent a token holder from restreaming content; this is a conformance rule for tltv nodes, not a hard security property.
 
 **Token format.** Tokens are opaque URL-safe strings, maximum 256 characters. The token format and generation are implementation-specific. Tokens MUST contain only characters that are safe in URI query parameters without percent-encoding (unreserved characters per RFC 3986: `A-Z a-z 0-9 - . _ ~`).
 
@@ -693,11 +693,11 @@ Same procedure as channel metadata (sections 5.3 and 5.4): sign all fields excep
 
 Nodes SHOULD also serve the guide in XMLTV format at the path ending `.xml` (e.g., `/tltv/v1/channels/{id}/guide.xml`). The XMLTV document is NOT signed — it is a convenience format for compatibility with existing EPG tools. Clients that require authenticity MUST use the signed JSON guide.
 
-**IPTV integration.** XMLTV is the standard EPG format used by IPTV clients: TiviMate, Emby, Plex Live TV, Jellyfin, IPTV Smarters, Kodi PVR, and others. A TLTV channel that serves XMLTV is immediately consumable by these applications. The HLS stream URL can be used directly by any IPTV player — it is standard HLS.
+**IPTV integration.** XMLTV is the standard EPG format used by IPTV clients: TiviMate, Emby, Plex Live TV, Jellyfin, IPTV Smarters, Kodi PVR, and others. A tltv channel that serves XMLTV is immediately consumable by these applications. The HLS stream URL can be used directly by any IPTV player — it is standard HLS.
 
 Channel metadata fields map to standard IPTV conventions:
 
-| TLTV field | XMLTV element | M3U attribute |
+| tltv field | XMLTV element | M3U attribute |
 |---|---|---|
 | `name` | `<display-name>` | `tvg-name` |
 | `icon` | `<icon src="...">` | `tvg-logo` |
@@ -705,11 +705,11 @@ Channel metadata fields map to standard IPTV conventions:
 | `language` | `<display-name lang="...">` | — |
 | `id` | `<channel id="...">` | `tvg-id` |
 
-A TLTV node MAY aggregate multiple channels' guides into a single XMLTV document and M3U playlist (the standard IPTV format pair), making the node appear as an IPTV provider to existing apps. This requires no protocol changes — it is a presentation concern built on top of the per-channel guide endpoints.
+A tltv node MAY aggregate multiple channels' guides into a single XMLTV document and M3U playlist (the standard IPTV format pair), making the node appear as an IPTV provider to existing apps. This requires no protocol changes — it is a presentation concern built on top of the per-channel guide endpoints.
 
-This compatibility means TLTV channels can federate with the existing IPTV ecosystem. The IPTV network is already out there — the problems are discovery and inter-channel communication. TLTV solves both without requiring viewers to install new software.
+This compatibility means tltv channels can federate with the existing IPTV ecosystem. The IPTV network is already out there — the problems are discovery and inter-channel communication. tltv solves both without requiring viewers to install new software.
 
-**IPTV and failover.** IPTV clients consume HLS stream URLs directly and have no awareness of TLTV protocol features such as signed metadata, the `origins` field, or automatic failover between origins (section 10.8). If a stream URL becomes unreachable, the IPTV client reports "stream unavailable" — it cannot discover or switch to a mirror. Operators who need failover for IPTV clients should use standard infrastructure techniques (DNS failover, load balancer, CDN) so that the HLS URL remains stable across origin changes. TLTV-native viewers handle this automatically through the `origins` list.
+**IPTV and failover.** IPTV clients consume HLS stream URLs directly and have no awareness of tltv protocol features such as signed metadata, the `origins` field, or automatic failover between origins (section 10.8). If a stream URL becomes unreachable, the IPTV client reports "stream unavailable" — it cannot discover or switch to a mirror. Operators who need failover for IPTV clients should use standard infrastructure techniques (DNS failover, load balancer, CDN) so that the HLS URL remains stable across origin changes. tltv-native viewers handle this automatically through the `origins` list.
 
 ### 6.7 Guide Aggregation
 
@@ -759,7 +759,7 @@ Verification MUST be performed before trusting any signed document. A failed ver
 
 ## 8. Protocol Endpoints
 
-These are the endpoints a TLTV node exposes to the network. All are read-only (GET). The management API (creating channels, setting schedules, generating content) is implementation-specific and not part of this protocol.
+These are the endpoints a tltv node exposes to the network. All are read-only (GET). The management API (creating channels, setting schedules, generating content) is implementation-specific and not part of this protocol.
 
 ### 8.1 Node Info
 
@@ -778,7 +778,7 @@ Returns the node's identity and the channels it serves.
   "channels": [
     {
       "id": "TVMkVHiXF9W1NgM9KLgs7tcBMvC1YtF4Daj4yfTrJercs3",
-      "name": "TLTV Channel One"
+      "name": "tltv Channel One"
     }
   ],
   "relaying": [
@@ -1420,9 +1420,9 @@ When a client encounters a node, it MUST check the `versions` array in `/.well-k
 
 Clients MUST reject signed documents with a `v` value they do not support. A V1 client that receives a document with `"v": 2` MUST discard it — the signing or field semantics may have changed.
 
-### 14.4 TLTV Improvement Proposals (TIPs)
+### 14.4 tltv Improvement Proposals (TIPs)
 
-Changes to the protocol are proposed, discussed, and documented through **TIPs** (TLTV Improvement Proposals). Each TIP gets a number, a status, and a document.
+Changes to the protocol are proposed, discussed, and documented through **TIPs** (tltv Improvement Proposals). Each TIP gets a number, a status, and a document.
 
 **TIP lifecycle:**
 
@@ -1546,7 +1546,7 @@ Showrunner agents on different channels communicate for creative collaboration. 
 ### 16.6 Enhanced Discovery
 
 - **DHT.** Distributed hash table (Kademlia) mapping channel IDs to connection hints. Eliminates the need for peer hints in URIs. Only justified when the network grows to hundreds or thousands of channels — peer exchange gossip is sufficient for smaller networks. BitTorrent launched in 2001 and added DHT in 2005.
-- **mDNS.** Find TLTV nodes on the local network.
+- **mDNS.** Find tltv nodes on the local network.
 - **Tor/I2P.** Onion and garlic routing for transport-level censorship resistance. Channel hints would use `.onion` or I2P addresses instead of IP/DNS.
 
 ### 16.7 Key Migration — Advanced
@@ -1599,7 +1599,7 @@ The V1 `stream` field stays for backwards compatibility. New formats are additiv
 
 Matrix uses an event DAG because multiple homeservers can modify room state concurrently. The DAG plus state resolution algorithm determines which write wins.
 
-TLTV is single-writer. All channel state is signed by one key. Concurrent conflicting writes cannot happen in normal operation because only one key can sign. (Mirror nodes share the same key but are operationally constrained to single-active-signer — see section 10.8. The equal-seq rule in section 5.5 provides safety if this constraint is briefly violated during promotion.)
+tltv is single-writer. All channel state is signed by one key. Concurrent conflicting writes cannot happen in normal operation because only one key can sign. (Mirror nodes share the same key but are operationally constrained to single-active-signer — see section 10.8. The equal-seq rule in section 5.5 provides safety if this constraint is briefly violated during promotion.)
 
 | State | Writer | Conflict possible? |
 |---|---|---|
@@ -1612,11 +1612,11 @@ Every piece of federated state is either single-writer (signed by one key) or no
 
 What we use instead: signed documents with epoch timestamps as ordering. The channel signs a document with a `seq` value set to the current Unix epoch time. Relays cache it. When the channel updates, it signs a new document with a higher `seq`. Highest-seq-wins, and there's only one writer.
 
-This eliminates: Merkle hashing, topological sorting, state resolution algorithms, conflict handling, event storage, and compaction. If TLTV ever introduces key delegation (section 16.2), delegated keys are still single-writer per operation — the master key delegates, sub-keys sign independently. No DAG needed.
+This eliminates: Merkle hashing, topological sorting, state resolution algorithms, conflict handling, event storage, and compaction. If tltv ever introduces key delegation (section 16.2), delegated keys are still single-writer per operation — the master key delegates, sub-keys sign independently. No DAG needed.
 
 ## Appendix B: Relationship to Multi-Channel
 
-A single TLTV instance can serve multiple channels. Each channel has its own keypair, metadata, stream, and guide. The protocol makes no distinction between a single-channel server and a multi-channel instance — both implement the same endpoints.
+A single tltv instance can serve multiple channels. Each channel has its own keypair, metadata, stream, and guide. The protocol makes no distinction between a single-channel server and a multi-channel instance — both implement the same endpoints.
 
 ```
 # Single-channel node

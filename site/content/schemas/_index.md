@@ -1,7 +1,7 @@
 ---
 title: "Schemas & API"
 weight: 2
-description: "Machine-readable definitions for TLTV implementors"
+description: "machine-readable definitions for tltv implementors"
 ---
 
 Machine-readable definitions for implementors.

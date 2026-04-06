@@ -1,9 +1,9 @@
 baseURL = 'https://spec.timelooptv.org/'
 languageCode = 'en-us'
-title = 'TLTV Protocol Specification'
+title = 'The tltv Protocol'
 
 [params]
-  description = 'Federation protocol for 24/7 television channels'
+  description = 'a federation protocol for open television channels.'
   version = '1.0'
   repoURL = 'https://github.com/tltv-org/protocol'
 
