@@ -1,0 +1,24 @@
+{{ define "main" }}
+<article class="spec-body tips-page">
+  <h1>tltv Improvement Proposals (TIPs)</h1>
+  <p>Changes to the tltv protocol are proposed, discussed, and documented through TIPs.</p>
+  <p>See <a href="/tips/tip-0001-tip-process/">TIP-1</a> for the full process definition, or the <a href="/#144-tltv-improvement-proposals-tips">protocol spec Section 14.4</a> for the original specification.</p>
+
+  <h2>Index</h2>
+  <table>
+    <thead>
+      <tr><th>TIP</th><th>Title</th><th>Type</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {{ range .Pages }}
+      <tr>
+        <td><a href="{{ .RelPermalink }}">{{ .Params.tip_num }}</a></td>
+        <td><a href="{{ .RelPermalink }}">{{ .Title }}</a></td>
+        <td>{{ .Params.tip_type }}</td>
+        <td>{{ .Params.tip_status }}</td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</article>
+{{ end }}

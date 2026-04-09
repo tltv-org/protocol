@@ -32,3 +32,6 @@ title = 'The tltv Protocol'
   [[module.mounts]]
     source = '..'
     target = 'assets/repo'
+  [[module.mounts]]
+    source = '../tips'
+    target = 'assets/tips'

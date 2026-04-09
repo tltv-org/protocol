@@ -1,7 +1,7 @@
 ---
 tip: 1
 title: The TIP Process
-status: Draft
+status: Final
 type: Process
 author: Philo Farnsworth <farnsworth27@protonmail.com>
 created: 2026-04-09
@@ -160,7 +160,22 @@ Draft ──> Accepted ──> Final
 - **Final is permanent.** A Final TIP cannot be modified except for errata (typo fixes, clarifications that don't change behavior). Substantive changes require a new TIP that supersedes it.
 - A TIP number is never reused, regardless of status.
 
-#### 6.1 Versioning Rules
+#### 6.1 PR Merge vs. TIP Status
+
+A TIP is submitted as a pull request on GitHub. The PR merge and the TIP lifecycle are related but distinct:
+
+| Event | TIP Status | Meaning |
+|---|---|---|
+| PR opened | Draft | Proposal submitted for review. |
+| PR merged | Draft or Accepted | Design is settled, TIP enters the repository. |
+| Reference implementation ships | Accepted | Implementation exists and is deployed. |
+| Status updated to Final | Final | Spec text folded into PROTOCOL.md, version bumped. |
+
+Merging the PR means the *design document* is accepted into the repository — not that the feature is deployed. For Standards Track TIPs, the TIP lives in `tips/` at Draft or Accepted status while implementation proceeds. The Final status update and PROTOCOL.md fold-in happen as a separate commit once the implementation ships.
+
+Process TIPs (like this one) may go directly to Final on merge, since the document is its own implementation.
+
+#### 6.2 Versioning Rules
 
 These rules are inherited from PROTOCOL.md Section 14.2 and restated here for completeness:
 

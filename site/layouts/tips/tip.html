@@ -1,0 +1,22 @@
+{{ define "main" }}
+{{ $tip := resources.Get (printf "tips/%s" .Params.tip_file) }}
+{{ if $tip }}
+  {{ $raw := $tip.Content }}
+  {{/* Strip YAML front matter */}}
+  {{ $body := replaceRE `(?s)\A---\n.*?\n---\s*` "" $raw }}
+  {{/* Strip the H1 title (redundant with page title) */}}
+  {{ $body = replaceRE `(?s)\A\s*# [^\n]+\s*` "" $body }}
+
+  <article class="spec-body tips-page">
+    <header class="spec-header">
+      <h1>{{ .Title }}</h1>
+    </header>
+    {{ $body | markdownify }}
+  </article>
+{{ else }}
+  <article>
+    <h1>{{ .Title }}</h1>
+    <p>Error: TIP file not found.</p>
+  </article>
+{{ end }}
+{{ end }}

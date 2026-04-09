@@ -75,6 +75,12 @@ pip install -r requirements.txt pytest
 PYTHONPATH=. pytest tests/test_vectors.py -v
 ```
 
+## TIPs
+
+Changes to the protocol are proposed through **TIPs** (tltv Improvement Proposals). Each TIP is a Markdown document with a structured format, submitted as a pull request.
+
+See [`tips/`](tips/) for the full index, or [TIP-1](tips/tip-0001-tip-process.md) for how the process works.
+
 ## Website
 
 The rendered specification is published at [spec.timelooptv.org](https://spec.timelooptv.org). The site source lives in `site/` and is built with [Hugo](https://gohugo.io/).
@@ -108,6 +114,10 @@ reference/
     tests/
       test_vectors.py               # Tests against spec vectors
     requirements.txt                # cryptography>=41.0
+tips/
+  README.md                         # TIP index
+  tip-0001-tip-process.md           # TIP-1: The TIP Process
+  tip-template.md                   # Template for new TIPs
 site/
   hugo.toml                         # Hugo config (spec.timelooptv.org)
   content/                          # Site content pages

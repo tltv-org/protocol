@@ -1697,3 +1697,11 @@ Signature (base58): 2TgRpS4h1UREKn3rRGk3cMRQ9fXQZ2TYX76oWCkHnDbHmUm2hTNAcXy8nSph
 
 Verification: remove the `signature` field, canonicalize to JSON (keys sorted, no whitespace), verify the Ed25519 signature against the canonical bytes using the public key extracted from the `id` field.
 
+---
+
+## Changelog
+
+### V1.0 — 2026-03-16
+
+- Initial release.
+
