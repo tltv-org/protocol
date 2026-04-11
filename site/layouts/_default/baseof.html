@@ -9,10 +9,12 @@
   <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="{{ .Permalink }}">
-  <meta property="og:image" content="{{ .Site.BaseURL }}og-image.png">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="{{ "og-image.png" | absURL }}">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ if not .IsHome }}{{ .Title }} | {{ end }}{{ .Site.Title }}">
-  <meta name="twitter:image" content="{{ .Site.BaseURL }}og-image.png">
+  <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+  <meta name="twitter:image" content="{{ "og-image.png" | absURL }}">
+  <link rel="canonical" href="{{ .Permalink }}">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/style.css">
 </head>
